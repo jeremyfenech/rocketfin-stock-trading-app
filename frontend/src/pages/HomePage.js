@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { fetchRecentTransactions, fetchPortfolioStatus } from '../services/stockService';
+import React, { useState, useEffect } from "react";
+import {
+  fetchRecentTransactions,
+  fetchPortfolioStatus,
+} from "../services/stockService";
 
 function HomePage() {
   const [portfolioStatus, setPortfolioStatus] = useState({});
@@ -20,17 +23,23 @@ function HomePage() {
       <h1>Portfolio Status</h1>
       <div>
         {/* Display portfolio status (cost basis, market value, etc.) */}
-        <p>Cost Basis: {portfolioStatus.costBasis}</p>
-        <p>Market Value: {portfolioStatus.marketValue}</p>
-        <p>Unrealized Return Rate: {portfolioStatus.unrealizedReturnRate}</p>
-        <p>Unrealized Profit/Loss: {portfolioStatus.unrealizedProfitLoss}</p>
+        <p>Cost Basis: {portfolioStatus.total_cost_basis}</p>
+        <p>Market Value: {portfolioStatus.total_current_market_value}</p>
+        <p>
+          Unrealized Return Rate: {portfolioStatus.total_unrealized_return_rate}
+          %
+        </p>
+        <p>
+          Unrealized Profit/Loss: {portfolioStatus.total_unrealized_profit_loss}
+        </p>
       </div>
 
       <h2>Recent Transactions</h2>
       <ul>
         {recentTransactions.map((transaction, index) => (
           <li key={index}>
-            {transaction.instrument}: {transaction.operation} {transaction.shares} shares on {transaction.date}
+            {transaction.ticker.toUpperCase()}: {transaction.operation} {transaction.shares}{" "}
+            shares on {transaction.date}
           </li>
         ))}
       </ul>

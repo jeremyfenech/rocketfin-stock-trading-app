@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+import datetime
 
 db = SQLAlchemy()
 
@@ -9,7 +9,7 @@ class Transaction(db.Model):
     shares = db.Column(db.Integer, nullable=False)
     operation = db.Column(db.String(4), nullable=False)  # buy or sell
     price = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc))
 
     def __repr__(self):
         return f"<Transaction {self.ticker} {self.operation} {self.shares}>"

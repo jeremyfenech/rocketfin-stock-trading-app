@@ -18,11 +18,11 @@ function PortfolioPage() {
       <ul>
         {positions.map((position, index) => (
           <li key={index}>
-            <h3>{position.instrument}</h3>
-            <p>Cost Basis: {position.costBasis}</p>
-            <p>Market Value: {position.marketValue}</p>
-            <p>Unrealized Return Rate: {position.unrealizedReturnRate}</p>
-            <p>Unrealized Profit/Loss: {position.unrealizedProfitLoss}</p>
+            <h3>{position.name}</h3>
+            <p>Cost Basis: {position.total_cost_basis}</p>
+            <p>Market Value: {position.current_market_value}</p>
+            <p>Unrealized Return Rate: {position.unrealized_return_rate}%</p>
+            <p>Unrealized Profit/Loss: {position.unrealized_profit_loss}</p>
           </li>
         ))}
       </ul>

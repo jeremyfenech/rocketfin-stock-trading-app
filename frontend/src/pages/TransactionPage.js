@@ -52,9 +52,11 @@ function TransactionPage() {
       {instrumentData && (
         <div>
           <h2>{instrumentData.name}</h2>
-          <p>Current Price: ${instrumentData.currentPrice}</p>
+          <p>Current Price: ${instrumentData.current_price}</p>
           <p>Bid: ${instrumentData.bid}</p>
           <p>Ask: ${instrumentData.ask}</p>
+          <p>Change: ${instrumentData.change_value}</p>
+          <p>Change (%): {instrumentData.change_percent}%</p>
 
           <input 
             type="number" 
