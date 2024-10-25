@@ -19,13 +19,21 @@ function TransactionPage() {
   };
 
   const handleBuy = async () => {
-    await buyShares(ticker, shares);
-    alert('Shares purchased!');
+    try {
+      await buyShares(ticker, shares);
+      alert('Shares purchased!');
+    } catch (error) {
+      alert('Error purchasing shares.');
+    }
   };
 
   const handleSell = async () => {
-    await sellShares(ticker, shares);
-    alert('Shares sold!');
+    try {
+      await sellShares(ticker, shares);
+      alert('Shares sold!');
+    } catch (error) {
+      alert('Error selling shares.');
+    }
   };
 
   return (
@@ -44,9 +52,9 @@ function TransactionPage() {
       {instrumentData && (
         <div>
           <h2>{instrumentData.name}</h2>
-          <p>Current Price: {instrumentData.currentPrice}</p>
-          <p>Bid: {instrumentData.bid}</p>
-          <p>Ask: {instrumentData.ask}</p>
+          <p>Current Price: ${instrumentData.currentPrice}</p>
+          <p>Bid: ${instrumentData.bid}</p>
+          <p>Ask: ${instrumentData.ask}</p>
 
           <input 
             type="number" 

@@ -6,7 +6,7 @@ export const fetchRecentTransactions = async () => {
 };
 
 export const fetchPortfolioStatus = async () => {
-  const response = await fetch(`${API_BASE_URL}/portfolio/status`);
+  const response = await fetch(`${API_BASE_URL}/portfolio`);
   return await response.json();
 };
 
@@ -18,7 +18,21 @@ export const fetchPortfolio = async () => {
 export const searchInstrument = async (ticker) => {
   const response = await fetch(`${API_BASE_URL}/instruments/search?ticker=${ticker}`);
   if (!response.ok) throw new Error('Instrument not found');
-  return await response.json();
+
+  const data = await response.json();
+  
+  // Assuming the API returns a structure like this: data.quoteResponse.result[0]
+  const instrument = data.quoteResponse.result[0]; // Get the first result
+  if (!instrument) throw new Error('Instrument not found');
+  
+  // Extract the relevant fields
+  return {
+    name: instrument.longName, // Use long name for display
+    currentPrice: instrument.regularMarketPrice,
+    bid: instrument.bid,
+    ask: instrument.ask,
+    ticker: instrument.symbol // Add ticker symbol if needed
+  };
 };
 
 export const buyShares = async (ticker, shares) => {
