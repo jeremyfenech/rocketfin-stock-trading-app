@@ -36,17 +36,11 @@ ul {
   padding: 0;
 }
 
-.pillBar {
-  background-color: #f9f9f9;
-  margin: 1rem 0;
-  padding: 1rem;
-  border-radius: 5px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
 .mainContainer {
   padding: 2rem 0;
   padding-top: 120px;
+  display: flex;
+  justify-content: center;
 }
 
 .mainContainer ul {

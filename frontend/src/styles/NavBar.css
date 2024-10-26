@@ -29,6 +29,7 @@ nav {
     color: #e0e0e0;
     font-size: 1.5rem;
     cursor: pointer;
+    width: 0; /* fix weird spacing bug on mobile */
 }
 
 .nav-links {
@@ -40,7 +41,7 @@ nav {
 }
 
 nav li {
-    margin-right: 1.5rem;
+    margin-left: 1.5rem;
 }
 
 nav a {

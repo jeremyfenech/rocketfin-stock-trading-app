@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask import Blueprint, request, jsonify
 from models import db, Transaction, Portfolio
 from services import fetch_instrument_data
+from sqlalchemy import func
 
 api = Blueprint('api', __name__)
 
@@ -12,30 +13,33 @@ def search_instrument():
     data = fetch_instrument_data(ticker)
     return jsonify(data)
 
+
 @api.route('/transactions/buy', methods=['POST'])
 def buy_shares():
     data = request.json
     ticker = data.get('ticker')
     shares = float(data.get('shares'))
 
+    if (shares <= 0):
+        return jsonify({"error": "Invalid number of shares"}), 400
+
     # Fetch current price of the instrument
     try:
-        # Assuming this function returns the latest instrument data
         instrument_data = fetch_instrument_data(ticker)
-        price = instrument_data['current_price']  # Extract the current price
+        # Extract the current price
+        price = instrument_data[0]['current_price']
     except Exception as e:
-        # Return an error if fetching fails
         return jsonify({"message": str(e)}), 400
 
     # Logic to record the purchase in the database
     # Check if the portfolio exists; if not, create it
-    existing_portfolio = Portfolio.query.filter_by(ticker=ticker).first()
+    existing_portfolio = Portfolio.query.filter(func.lower(
+        Portfolio.ticker) == ticker.lower()).first()
+
     if existing_portfolio:
-        # Update existing portfolio
         existing_portfolio.shares_owned += shares
         existing_portfolio.total_cost_basis += price * shares
     else:
-        # Create a new portfolio entry
         new_portfolio = Portfolio(
             ticker=ticker, total_cost_basis=price * shares, shares_owned=shares)
         db.session.add(new_portfolio)
@@ -44,7 +48,7 @@ def buy_shares():
     transaction = Transaction(
         ticker=ticker, shares=shares, operation='buy', price=price)
     db.session.add(transaction)
-    db.session.commit()  # Save changes to the database
+    db.session.commit()
 
     return jsonify({"message": "Shares purchased!"}), 201
 
@@ -55,15 +59,21 @@ def sell_shares():
     ticker = data.get('ticker')
     shares = float(data.get('shares'))  # Convert shares to float
 
+    if (shares <= 0):
+        return jsonify({"error": "Invalid number of shares"}), 400
+
     # Fetch current price of the instrument
     try:
         instrument_data = fetch_instrument_data(ticker)
-        price = instrument_data['current_price']  # Extract the current price
+        # Extract the current price
+        price = instrument_data[0]['current_price']
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
     # Check if the portfolio exists
-    portfolio = Portfolio.query.filter_by(ticker=ticker).first()
+    portfolio = Portfolio.query.filter(func.lower(
+        Portfolio.ticker) == ticker.lower()).first()
+
     if not portfolio or portfolio.shares_owned < shares:
         return jsonify({"error": "Not enough shares to sell"}), 400
 
@@ -84,10 +94,22 @@ def sell_shares():
     db.session.commit()  # Save changes to the database
     return jsonify({"message": "Shares sold!"}), 201
 
+
 @api.route('/transactions', methods=['GET'])
 def get_transactions():
-    # Fetch transactions from the database
-    transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    # Get the 'limit' parameter from the query string, default to None if not provided
+    limit = request.args.get('limit', default=None, type=int)
+
+    # Fetch transactions from the database, ordered by date in descending order
+    query = Transaction.query.order_by(Transaction.date.desc())
+    
+    # Apply limit if specified
+    if limit is not None:
+        query = query.limit(limit)
+
+    transactions = query.all()
+    
+    # Format the transactions for JSON response
     return jsonify([{
         'ticker': t.ticker,
         'shares': t.shares,
@@ -101,7 +123,7 @@ def get_transactions():
 def get_portfolio():
     # Fetch portfolio details
     portfolio = Portfolio.query.all()
-    
+
     # Initialize an empty list to hold portfolio data
     portfolio_data = []
 
@@ -112,10 +134,12 @@ def get_portfolio():
     try:
         instrument_data_list = fetch_instrument_data(','.join(tickers))
     except Exception as e:
-        instrument_data_list = []  # Handle error gracefully
+        # instrument_data_list = []  # Handle error gracefully
+        raise Exception("Error fetching instrument data")
 
     # Create a dictionary for easy lookup of instrument data by ticker
-    instrument_data_dict = {data['symbol'].upper(): data for data in instrument_data_list}
+    instrument_data_dict = {
+        data['symbol'].upper(): data for data in instrument_data_list}
 
     for p in portfolio:
         # Convert ticker to uppercase for case-insensitive lookup
@@ -125,13 +149,13 @@ def get_portfolio():
 
         # Calculate current market value
         current_market_value = current_price * p.shares_owned
-        
+
         # Calculate Unrealized Profit/Loss
         unrealized_profit_loss = current_market_value - p.total_cost_basis
-        
-        # Calculate Unrealized Return Rate and round to 2 decimal places
-        unrealized_return_rate = round((unrealized_profit_loss / p.total_cost_basis) * 100, 2) if p.total_cost_basis > 0 else 0
 
+        # Calculate Unrealized Return Rate and round to 2 decimal places
+        unrealized_return_rate = round(
+            (unrealized_profit_loss / p.total_cost_basis) * 100, 2) if p.total_cost_basis > 0 else 0
 
         # Append the processed data to the portfolio_data list
         portfolio_data.append({
@@ -146,16 +170,17 @@ def get_portfolio():
 
     return jsonify(portfolio_data)
 
+
 @api.route('/portfolio/status', methods=['GET'])
 def get_portfolio_status():
     # Fetch portfolio details
     portfolio = Portfolio.query.all()
-    
+
     total_shares_owned = 0
     total_cost_basis = 0.0
     total_current_market_value = 0.0
     total_unrealized_profit_loss = 0.0
-    
+
     # Gather all tickers from the portfolio and convert to uppercase
     tickers = [p.ticker.upper() for p in portfolio]
 
@@ -166,7 +191,8 @@ def get_portfolio_status():
         instrument_data_list = []  # Handle error gracefully
 
     # Create a dictionary for easy lookup of instrument data by ticker
-    instrument_data_dict = {data['symbol'].upper(): data for data in instrument_data_list}
+    instrument_data_dict = {
+        data['symbol'].upper(): data for data in instrument_data_list}
 
     for p in portfolio:
         # Convert ticker to uppercase for case-insensitive lookup
@@ -175,16 +201,17 @@ def get_portfolio_status():
 
         # Calculate current market value
         current_market_value = current_price * p.shares_owned
-        
+
         # Update totals
         total_shares_owned += p.shares_owned
         total_cost_basis += p.total_cost_basis
         total_current_market_value += current_market_value
-        total_unrealized_profit_loss += (current_market_value - p.total_cost_basis)
+        total_unrealized_profit_loss += (current_market_value -
+                                         p.total_cost_basis)
 
     # Calculate total unrealized return rate
     total_unrealized_return_rate = round((
-        (total_unrealized_profit_loss / total_cost_basis) * 100 
+        (total_unrealized_profit_loss / total_cost_basis) * 100
         if total_cost_basis > 0 else 0
     ), 2)
 

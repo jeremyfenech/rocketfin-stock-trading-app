@@ -9,7 +9,7 @@ class Transaction(db.Model):
     shares = db.Column(db.Integer, nullable=False)
     operation = db.Column(db.String(4), nullable=False)  # buy or sell
     price = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.now(datetime.timezone.utc))
+    date = db.Column(db.DateTime, default=lambda: datetime.datetime.now())  # Use lambda to get current time
 
     def __repr__(self):
         return f"<Transaction {self.ticker} {self.operation} {self.shares}>"

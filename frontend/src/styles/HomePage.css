@@ -1,0 +1,16 @@
+.show-all-button {
+  background-color: transparent;
+  color: gray;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.show-all-button:hover {
+  color: rgb(37, 37, 37);
+}
+
+.sub-heading {
+  margin-right: 20px;
+}

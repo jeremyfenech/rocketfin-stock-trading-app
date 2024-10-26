@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from "react";
-import {
-  fetchRecentTransactions,
-  fetchPortfolioStatus,
-} from "../services/stockService";
+import { fetchRecentTransactions, fetchPortfolioStatus } from "../services/stockService";
+import PillBar from "../components/PillBar";
+import { Link } from 'react-router-dom';
+import "../styles/HomePage.css";
+import Title from '../components/Title';
 
 function HomePage({ showError }) {
   const [portfolioStatus, setPortfolioStatus] = useState({});
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    showError("");
+    showError(""); // Clear previous error messages
     const getData = async () => {
       try {
         const status = await fetchPortfolioStatus();
-        const transactions = await fetchRecentTransactions();
+        const transactions = await fetchRecentTransactions(5);
         setPortfolioStatus(status);
         setRecentTransactions(transactions);
       } catch (error) {
         showError("Failed to fetch portfolio status or recent transactions.");
       } finally {
-        setLoading(false); // Set loading to false after data fetching
+        setLoading(false);
       }
     };
     getData();
-  }, [showError]); // Include showError in the dependency array
+  }, [showError]);
 
   if (loading) {
-    return <div className="mainContainer">Loading...</div>; // Loading indicator
+    return <div className="mainContainer">Loading...</div>;
   }
 
   return (
     <div className="mainContainer">
+      <Title title="Home" />
       <div className="content">
         <h1>Portfolio Status</h1>
         <div>
@@ -89,31 +91,24 @@ function HomePage({ showError }) {
           </p>
         </div>
 
-        <h2>Recent Transactions</h2>
+        <h2>
+          <span className="sub-heading">Recent Transactions</span>
+          <Link to="/all-transactions">
+            <button className="show-all-button">Show All {'>>'}</button>
+          </Link>
+        </h2>
         <ul>
-          {recentTransactions.map((transaction, index) => {
-            const formattedDateTime = new Date(transaction.date).toLocaleString(
-              "en-US",
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                hour12: true,
-              }
-            );
-
-            return (
-              <li className="pillBar" key={index}>
-                <span className="price">
-                  {transaction.ticker.toUpperCase()}
-                </span>
-                : {transaction.operation} {transaction.shares} shares on{" "}
-                {formattedDateTime}
-              </li>
-            );
-          })}
+          {recentTransactions.map((transaction) => (
+            <PillBar
+              key={transaction.id} // Make sure to add a unique key prop
+              ticker={transaction.ticker}
+              operation={transaction.operation}
+              shares={transaction.shares}
+              date={transaction.date}
+              price={transaction.price}
+              fullTimestamp={transaction.date}
+            />
+          ))}
         </ul>
       </div>
     </div>

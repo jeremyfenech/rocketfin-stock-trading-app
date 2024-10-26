@@ -1,44 +1,59 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://192.168.1.153:5000/api';
 
-export const fetchRecentTransactions = async () => {
-  const response = await fetch(`${API_BASE_URL}/transactions`);
-  return await response.json();
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    // Attempt to parse the error response as JSON
+    const errorData = await response.json().catch(() => null);
+    
+    // If there's an "error" field in the response, use it; otherwise, fallback to a default message
+    const errorMessage = errorData?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+  return response.json();
+};
+
+export const fetchRecentTransactions = async (limit = null) => {
+  const url = limit 
+    ? `${API_BASE_URL}/transactions?limit=${limit}`
+    : `${API_BASE_URL}/transactions`;
+
+  const response = await fetch(url);
+  return handleResponse(response);
 };
 
 export const fetchPortfolioStatus = async () => {
   const response = await fetch(`${API_BASE_URL}/portfolio/status`);
-  return await response.json();
+  return handleResponse(response);
 };
 
 export const fetchPortfolio = async () => {
   const response = await fetch(`${API_BASE_URL}/portfolio`);
-  return await response.json();
+  return handleResponse(response);
 };
 
 export const searchInstrument = async (ticker) => {
   const response = await fetch(`${API_BASE_URL}/instruments/search?ticker=${ticker}`);
-  if (!response.ok) throw new Error('Instrument not found');
-
-  const data = await response.json();
-  return data;
+  return handleResponse(response);
 };
 
 export const buyShares = async (ticker, shares) => {
-  await fetch(`${API_BASE_URL}/transactions/buy`, {
+  const response = await fetch(`${API_BASE_URL}/transactions/buy`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ ticker, shares }),
   });
+  return handleResponse(response);
 };
 
 export const sellShares = async (ticker, shares) => {
-  await fetch(`${API_BASE_URL}/transactions/sell`, {
+  const response = await fetch(`${API_BASE_URL}/transactions/sell`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ ticker, shares }),
   });
+  return handleResponse(response);
 };

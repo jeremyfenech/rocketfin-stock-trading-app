@@ -5,6 +5,8 @@ import {
   sellShares,
 } from "../services/stockService";
 import "../styles/TransactionPage.css";
+import { useNavigate } from "react-router-dom";
+import Title from "../components/Title";
 
 function TransactionPage({ showError }) {
   const [ticker, setTicker] = useState("");
@@ -30,10 +32,13 @@ function TransactionPage({ showError }) {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleBuy = async () => {
     try {
-      await buyShares(ticker, shares);
+      await buyShares(instrumentData.symbol, shares);
       alert("Shares purchased!");
+      navigate("/"); // Redirect to the homepage
     } catch (error) {
       showError("Error purchasing shares.");
     }
@@ -41,15 +46,17 @@ function TransactionPage({ showError }) {
 
   const handleSell = async () => {
     try {
-      await sellShares(ticker, shares);
+      await sellShares(instrumentData.symbol, shares);
       alert("Shares sold!");
+      navigate("/"); // Redirect to the homepage
     } catch (error) {
-      showError("Error selling shares.");
+      showError(error.message);
     }
   };
 
   return (
     <div className="mainContainer">
+      <Title title="Transaction" />
       <div className="content transaction-content">
         <h1>Search and Trade Securities</h1>
         <input
@@ -85,7 +92,7 @@ function TransactionPage({ showError }) {
                   instrumentData.change_value >= 0 ? "positive" : "negative"
                 }`}
               >
-                ${instrumentData.change_value}
+                ${instrumentData.change_value.toFixed(2)}
               </span>
             </p>
             <p>
@@ -95,7 +102,7 @@ function TransactionPage({ showError }) {
                   instrumentData.change_percent >= 0 ? "positive" : "negative"
                 }`}
               >
-                {instrumentData.change_percent}%
+                {instrumentData.change_percent.toFixed(3)}%
               </span>
             </p>
 

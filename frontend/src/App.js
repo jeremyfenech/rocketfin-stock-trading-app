@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
 import PortfolioPage from "./pages/PortfolioPage";
 import TransactionPage from "./pages/TransactionPage";
+import AllTransactions from "./pages/AllTransactions";
 import ErrorMessage from "./components/ErrorMessage"; // Assuming you have an error component
 import "./styles/App.css";
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<HomePage showError={showError} clearError={clearError} />} />
         <Route path="/portfolio" element={<PortfolioPage showError={showError} clearError={clearError} />} />
         <Route path="/transactions" element={<TransactionPage showError={showError} clearError={clearError} />} />
+        <Route path="/all-transactions" element={<AllTransactions />} />
       </Routes>
     </Router>
   );
