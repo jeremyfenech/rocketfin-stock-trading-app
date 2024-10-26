@@ -2,17 +2,26 @@ import React, { useState, useEffect } from "react";
 import { fetchPortfolio } from "../services/stockService";
 import "../styles/PortfolioPage.css";
 
-function PortfolioPage() {
+function PortfolioPage({ showError }) {
   const [positions, setPositions] = useState([]);
   const [expandedIndices, setExpandedIndices] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
+    showError("");
+
     const getPortfolio = async () => {
-      const portfolioData = await fetchPortfolio();
-      setPositions(portfolioData);
+      try {
+        const portfolioData = await fetchPortfolio();
+        setPositions(portfolioData);
+      } catch (error) {
+        showError("Failed to fetch portfolio data.");
+      } finally {
+        setLoading(false);
+      }
     };
     getPortfolio();
-  }, []);
+  }, [showError]); // Include showError in the dependency array
 
   const toggleDetails = (index) => {
     if (expandedIndices.includes(index)) {
@@ -21,6 +30,10 @@ function PortfolioPage() {
       setExpandedIndices([...expandedIndices, index]);
     }
   };
+
+  if (loading) {
+    return <div className="mainContainer">Loading...</div>; // Loading indicator
+  }
 
   return (
     <div className="mainContainer">
@@ -34,6 +47,14 @@ function PortfolioPage() {
               className={`portfolio-item ${
                 expandedIndices.includes(index) ? "expanded" : ""
               }`}
+              aria-expanded={expandedIndices.includes(index)} // Accessibility attribute
+              role="button" // Role for better accessibility
+              tabIndex={0} // Make list item focusable
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  toggleDetails(index); // Toggle on keyboard enter/space
+                }
+              }}
             >
               <h3>{position.name || position.ticker.toUpperCase()}</h3>
               {expandedIndices.includes(index) && (
@@ -83,8 +104,8 @@ function PortfolioPage() {
                     >
                       {" "}
                       {position.unrealized_profit_loss < 0
-                        ? `-$${Math.abs(position.unrealized_profit_loss)}`
-                        : `$${position.unrealized_profit_loss}`}
+                        ? `-€${Math.abs(position.unrealized_profit_loss)}`
+                        : `€${position.unrealized_profit_loss}`}
                     </span>
                   </p>
                 </div>

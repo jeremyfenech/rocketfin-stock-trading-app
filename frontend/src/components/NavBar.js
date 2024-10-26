@@ -10,6 +10,11 @@ function NavBar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Close the menu when a link is clicked
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav>
       <div className="logo-container">
@@ -21,9 +26,9 @@ function NavBar() {
         &#9776; {/* Hamburger icon */}
       </button>
       <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/portfolio">Portfolio</Link></li>
-        <li><Link to="/transactions">Transactions</Link></li>
+        <li><Link to="/" onClick={handleLinkClick}>Home</Link></li>
+        <li><Link to="/portfolio" onClick={handleLinkClick}>Portfolio</Link></li>
+        <li><Link to="/transactions" onClick={handleLinkClick}>Transactions</Link></li>
       </ul>
     </nav>
   );

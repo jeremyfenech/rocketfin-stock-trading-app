@@ -1,0 +1,25 @@
+.error-message {
+  position: fixed;
+  top: 80px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  z-index: 1000; 
+  width: 70%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #721c24;
+  cursor: pointer;
+}

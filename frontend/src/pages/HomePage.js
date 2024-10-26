@@ -4,19 +4,31 @@ import {
   fetchPortfolioStatus,
 } from "../services/stockService";
 
-function HomePage() {
+function HomePage({ showError }) {
   const [portfolioStatus, setPortfolioStatus] = useState({});
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
+    showError("");
     const getData = async () => {
-      const status = await fetchPortfolioStatus();
-      const transactions = await fetchRecentTransactions();
-      setPortfolioStatus(status);
-      setRecentTransactions(transactions);
+      try {
+        const status = await fetchPortfolioStatus();
+        const transactions = await fetchRecentTransactions();
+        setPortfolioStatus(status);
+        setRecentTransactions(transactions);
+      } catch (error) {
+        showError("Failed to fetch portfolio status or recent transactions.");
+      } finally {
+        setLoading(false); // Set loading to false after data fetching
+      }
     };
     getData();
-  }, []);
+  }, [showError]); // Include showError in the dependency array
+
+  if (loading) {
+    return <div className="mainContainer">Loading...</div>; // Loading indicator
+  }
 
   return (
     <div className="mainContainer">
@@ -71,8 +83,8 @@ function HomePage() {
               }`}
             >
               {portfolioStatus.total_unrealized_profit_loss < 0
-                ? `-$${Math.abs(portfolioStatus.total_unrealized_profit_loss)}`
-                : `$${portfolioStatus.total_unrealized_profit_loss}`}
+                ? `-€${Math.abs(portfolioStatus.total_unrealized_profit_loss)}`
+                : `€${portfolioStatus.total_unrealized_profit_loss}`}
             </span>
           </p>
         </div>
