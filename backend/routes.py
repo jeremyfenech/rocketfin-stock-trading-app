@@ -121,7 +121,7 @@ def get_portfolio():
         # Convert ticker to uppercase for case-insensitive lookup
         instrument_data = instrument_data_dict.get(p.ticker.upper(), {})
         current_price = instrument_data.get('current_price', 0.0)
-        name = instrument_data.get('name', "Unknown")
+        name = instrument_data.get('name')
 
         # Calculate current market value
         current_market_value = current_price * p.shares_owned
@@ -129,8 +129,9 @@ def get_portfolio():
         # Calculate Unrealized Profit/Loss
         unrealized_profit_loss = current_market_value - p.total_cost_basis
         
-        # Calculate Unrealized Return Rate
-        unrealized_return_rate = (unrealized_profit_loss / p.total_cost_basis) * 100 if p.total_cost_basis > 0 else 0
+        # Calculate Unrealized Return Rate and round to 2 decimal places
+        unrealized_return_rate = round((unrealized_profit_loss / p.total_cost_basis) * 100, 2) if p.total_cost_basis > 0 else 0
+
 
         # Append the processed data to the portfolio_data list
         portfolio_data.append({
@@ -150,6 +151,7 @@ def get_portfolio_status():
     # Fetch portfolio details
     portfolio = Portfolio.query.all()
     
+    total_shares_owned = 0
     total_cost_basis = 0.0
     total_current_market_value = 0.0
     total_unrealized_profit_loss = 0.0
@@ -175,18 +177,20 @@ def get_portfolio_status():
         current_market_value = current_price * p.shares_owned
         
         # Update totals
+        total_shares_owned += p.shares_owned
         total_cost_basis += p.total_cost_basis
         total_current_market_value += current_market_value
         total_unrealized_profit_loss += (current_market_value - p.total_cost_basis)
 
     # Calculate total unrealized return rate
-    total_unrealized_return_rate = (
+    total_unrealized_return_rate = round((
         (total_unrealized_profit_loss / total_cost_basis) * 100 
         if total_cost_basis > 0 else 0
-    )
+    ), 2)
 
     # Return aggregated data
     return jsonify({
+        'total_shares_owned': total_shares_owned,
         'total_cost_basis': total_cost_basis,
         'total_current_market_value': total_current_market_value,
         'total_unrealized_profit_loss': total_unrealized_profit_loss,

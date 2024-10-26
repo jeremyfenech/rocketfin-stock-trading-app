@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import PortfolioPage from './pages/PortfolioPage';
 import TransactionPage from './pages/TransactionPage';
+import './styles/App.css';
 
 function App() {
   return (

@@ -11,8 +11,19 @@ headers = {
     'x-api-key': os.getenv("YAHOO_FINANCE_API_KEY")
 }
 
+
 def fetch_instrument_data(tickers):
-    return {}
+    return [
+        {
+            "ask": 0,
+            "bid": 0,
+            "change_percent": 0.36431292,
+            "change_value": 0.83999634,
+            "current_price": 231.41,
+            "name": "Apple Inc.",
+            "symbol": "AAPL"
+        }
+    ]
     # Expecting 'tickers' to be a comma-separated string
     querystring = {"symbols": tickers}
 
