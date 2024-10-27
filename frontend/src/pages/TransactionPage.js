@@ -23,7 +23,7 @@ function TransactionPage({ showError }) {
       if (data && data.length > 0) {
         setInstrumentData(data[0]); // Set to the first item in the array
       } else {
-        showError("Instrument not found.");
+        showError(data.error);
         setInstrumentData(null);
       }
     } catch (error) {

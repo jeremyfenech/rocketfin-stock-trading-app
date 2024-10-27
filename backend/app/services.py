@@ -2,7 +2,6 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 API_URL = "https://yfapi.net/v6/finance/quote"
@@ -10,7 +9,6 @@ API_URL = "https://yfapi.net/v6/finance/quote"
 headers = {
     'x-api-key': os.getenv("YAHOO_FINANCE_API_KEY")
 }
-
 
 def fetch_instrument_data(tickers):
     return [
@@ -29,7 +27,7 @@ def fetch_instrument_data(tickers):
 
     response = requests.get(API_URL, headers=headers, params=querystring)
     if response.status_code != 200:
-        raise Exception("Error fetching data from Yahoo Finance")
+        raise Exception("Error fetching data from Yahoo Finance.")
 
     data = response.json()
 
@@ -50,6 +48,6 @@ def fetch_instrument_data(tickers):
                 "symbol": instrument.get("symbol", "N/A")
             })
     else:
-        raise Exception("Instrument data not found")
+        raise Exception("Instrument data not found.")
 
     return instruments

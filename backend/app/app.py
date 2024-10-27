@@ -3,6 +3,7 @@ from .models import db
 from .routes import api
 from config import Config 
 from flask_cors import CORS
+from flasgger import Swagger 
 
 def create_app():
     app = Flask(__name__)
@@ -10,6 +11,9 @@ def create_app():
     db.init_app(app)
     
     CORS(app)
+
+    # Initialize Swagger
+    swagger = Swagger(app)
 
     with app.app_context():
         db.create_all()  # Create tables if they don't exist
