@@ -39,16 +39,16 @@ function HomePage({ showError }) {
         <div>
           <p>
             Total Shares:{" "}
-            <span className="price">{portfolioStatus.total_shares_owned}</span>
+            <span className="price">{portfolioStatus.total_shares_owned?.toLocaleString()}</span>
           </p>
           <p>
             Cost Basis:{" "}
-            <span className="price">${portfolioStatus.total_cost_basis}</span>
+            <span className="price">${portfolioStatus.total_cost_basis?.toLocaleString()}</span>
           </p>
           <p>
             Market Value:{" "}
             <span className="price">
-              ${portfolioStatus.total_current_market_value}
+              ${portfolioStatus.total_current_market_value?.toLocaleString()}
             </span>
           </p>
           <p
@@ -85,8 +85,8 @@ function HomePage({ showError }) {
               }`}
             >
               {portfolioStatus.total_unrealized_profit_loss < 0
-                ? `-€${Math.abs(portfolioStatus.total_unrealized_profit_loss)}`
-                : `€${portfolioStatus.total_unrealized_profit_loss}`}
+                ? `-$${Math.abs(portfolioStatus.total_unrealized_profit_loss)?.toLocaleString()}`
+                : `$${portfolioStatus.total_unrealized_profit_loss?.toLocaleString()}`}
             </span>
           </p>
         </div>
@@ -105,7 +105,8 @@ function HomePage({ showError }) {
               operation={transaction.operation}
               shares={transaction.shares}
               date={transaction.date}
-              price={transaction.price}
+              pricePerShare={transaction.price}
+              costBasis={transaction.price * transaction.shares}
               fullTimestamp={transaction.date}
             />
           ))}

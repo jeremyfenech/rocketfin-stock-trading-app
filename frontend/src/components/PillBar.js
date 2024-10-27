@@ -11,7 +11,7 @@ function PillBar({
   marketValue,
   unrealizedReturnRate,
   unrealizedProfitLoss,
-  price,
+  pricePerShare,
   fullTimestamp,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -47,16 +47,25 @@ function PillBar({
       {formattedDateTime}
       {isExpanded && (
         <div className="position-details">
+          {/* Show price even if it's zero */}
+          {pricePerShare !== null && pricePerShare !== undefined && (
+            <p>
+              Price Per Share:{" "}
+              <span className="price">${pricePerShare?.toLocaleString()}</span>
+            </p>
+          )}
           {/* Show cost basis even if it's zero */}
           {costBasis !== null && costBasis !== undefined && (
             <p>
-              Cost Basis: <span className="price">${costBasis}</span>
+              Cost Basis:{" "}
+              <span className="price">${costBasis?.toLocaleString()}</span>
             </p>
           )}
           {/* Show market value even if it's zero */}
           {marketValue !== null && marketValue !== undefined && (
             <p>
-              Market Value: <span className="price">${marketValue}</span>
+              Market Value:{" "}
+              <span className="price">${marketValue?.toLocaleString()}</span>
             </p>
           )}
           {/* Show unrealized return rate, even if it's zero */}
@@ -92,17 +101,11 @@ function PillBar({
                   }`}
                 >
                   {unrealizedProfitLoss < 0
-                    ? `-€${Math.abs(unrealizedProfitLoss)}`
-                    : `€${unrealizedProfitLoss}`}
+                    ? `-$${Math.abs(unrealizedProfitLoss)?.toLocaleString()}`
+                    : `$${unrealizedProfitLoss?.toLocaleString()}`}
                 </span>
               </p>
             )}
-          {/* Show price even if it's zero */}
-          {price !== null && price !== undefined && (
-            <p>
-              Price: <span className="price">${price}</span>
-            </p>
-          )}
           {/* Show full timestamp if it's provided */}
           {fullTimestamp !== null && fullTimestamp !== undefined && (
             <p>

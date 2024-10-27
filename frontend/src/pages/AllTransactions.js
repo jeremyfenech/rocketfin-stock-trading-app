@@ -45,7 +45,8 @@ function AllTransactions({ showError }) {
               operation={transaction.operation}
               shares={transaction.shares}
               date={transaction.date}
-              price={transaction.price}
+              pricePerShare={transaction.price}
+              costBasis={transaction.price * transaction.shares}
               fullTimestamp={transaction.date}
             />
           ))}
