@@ -3,6 +3,7 @@ import { fetchPortfolio } from "../services/stockService";
 import PillBar from "../components/PillBar"; // Import the PillBar component
 import "../styles/PortfolioPage.css";
 import Title from '../components/Title';
+import { Link } from 'react-router-dom';
 
 function PortfolioPage({ showError }) {
   const [positions, setPositions] = useState([]);
@@ -28,26 +29,36 @@ function PortfolioPage({ showError }) {
     return <div className="mainContainer">Loading...</div>; // Loading indicator
   }
 
+  const isPortfolioEmpty = positions.length === 0; // Check if portfolio is empty
+
   return (
     <div className="mainContainer">
       <Title title="Portfolio" />
       <div className="content portfolio-content">
         <h1>Your Portfolio</h1>
-        <ul className="portfolio-list">
-          {positions.map((position) => (
-            <PillBar
-              ticker={position.ticker}
-              name={position.name}
-              operation="Owns"
-              shares={position.shares_owned}
-              date={new Date()}
-              costBasis={position.total_cost_basis}
-              marketValue={position.current_market_value}
-              unrealizedReturnRate={position.unrealized_return_rate}
-              unrealizedProfitLoss={position.unrealized_profit_loss}
-            />
-          ))}
-        </ul>
+        {isPortfolioEmpty ? (
+          <p className="empty-portfolio-message">
+            Your portfolio is empty. Please purchase stocks from the{" "}
+            <Link to="/transactions">transactions page</Link>.
+          </p>
+        ) : (
+          <ul className="portfolio-list">
+            {positions.map((position) => (
+              <PillBar
+                key={position.ticker} // Make sure to add a unique key prop
+                ticker={position.ticker}
+                name={position.name}
+                operation="Owns"
+                shares={position.shares_owned}
+                date={new Date()}
+                costBasis={position.total_cost_basis}
+                marketValue={position.current_market_value}
+                unrealizedReturnRate={position.unrealized_return_rate}
+                unrealizedProfitLoss={position.unrealized_profit_loss}
+              />
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -403,6 +403,9 @@ def get_portfolio_status():
     """
     # Fetch portfolio details
     portfolio = Portfolio.query.all()
+    
+    if not portfolio:
+        return jsonify([]) 
 
     total_shares_owned = 0
     total_cost_basis = 0.0

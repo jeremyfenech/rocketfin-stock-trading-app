@@ -31,86 +31,99 @@ function HomePage({ showError }) {
     return <div className="mainContainer">Loading...</div>;
   }
 
+  const isPortfolioEmpty = !portfolioStatus.total_shares_owned;
+
   return (
     <div className="mainContainer">
       <Title title="Home" />
       <div className="content">
         <h1>Portfolio Status</h1>
-        <div>
-          <p>
-            Total Shares:{" "}
-            <span className="price">{portfolioStatus.total_shares_owned?.toLocaleString()}</span>
+        {isPortfolioEmpty ? (
+          <p className="empty-portfolio-message">
+            Your portfolio is empty. Please purchase stocks from the{" "}
+            <Link to="/transactions">transactions page</Link>.
           </p>
-          <p>
-            Cost Basis:{" "}
-            <span className="price">${portfolioStatus.total_cost_basis?.toLocaleString()}</span>
-          </p>
-          <p>
-            Market Value:{" "}
-            <span className="price">
-              ${portfolioStatus.total_current_market_value?.toLocaleString()}
-            </span>
-          </p>
-          <p
-            className={`profit-loss ${
-              portfolioStatus.total_unrealized_return_rate >= 0
-                ? "positive"
-                : "negative"
-            }`}
-          >
-            Unrealized Return Rate:{" "}
-            <span
-              className={`change ${
+        ) : (
+          <div>
+            <p>
+              Total Shares:{" "}
+              <span className="price">{portfolioStatus.total_shares_owned?.toLocaleString()}</span>
+            </p>
+            <p>
+              Cost Basis:{" "}
+              <span className="price">${portfolioStatus.total_cost_basis?.toLocaleString()}</span>
+            </p>
+            <p>
+              Market Value:{" "}
+              <span className="price">
+                ${portfolioStatus.total_current_market_value?.toLocaleString()}
+              </span>
+            </p>
+            <p
+              className={`profit-loss ${
+                portfolioStatus.total_unrealized_return_rate >= 0
+                  ? "positive"
+                  : "negative"
+              }`}
+            >
+              Unrealized Return Rate:{" "}
+              <span
+                className={`change ${
+                  portfolioStatus.total_unrealized_profit_loss >= 0
+                    ? "positive"
+                    : "negative"
+                }`}
+              >
+                {portfolioStatus.total_unrealized_return_rate}%
+              </span>
+            </p>
+            <p
+              className={`profit-loss ${
                 portfolioStatus.total_unrealized_profit_loss >= 0
                   ? "positive"
                   : "negative"
               }`}
             >
-              {portfolioStatus.total_unrealized_return_rate}%
-            </span>
-          </p>
-          <p
-            className={`profit-loss ${
-              portfolioStatus.total_unrealized_profit_loss >= 0
-                ? "positive"
-                : "negative"
-            }`}
-          >
-            Unrealized Profit/Loss:{" "}
-            <span
-              className={`change ${
-                portfolioStatus.total_unrealized_profit_loss >= 0
-                  ? "positive"
-                  : "negative"
-              }`}
-            >
-              {portfolioStatus.total_unrealized_profit_loss < 0
-                ? `-$${Math.abs(portfolioStatus.total_unrealized_profit_loss)?.toLocaleString()}`
-                : `$${portfolioStatus.total_unrealized_profit_loss?.toLocaleString()}`}
-            </span>
-          </p>
-        </div>
+              Unrealized Profit/Loss:{" "}
+              <span
+                className={`change ${
+                  portfolioStatus.total_unrealized_profit_loss >= 0
+                    ? "positive"
+                    : "negative"
+                }`}
+              >
+                {portfolioStatus.total_unrealized_profit_loss < 0
+                  ? `-$${Math.abs(portfolioStatus.total_unrealized_profit_loss)?.toLocaleString()}`
+                  : `$${portfolioStatus.total_unrealized_profit_loss?.toLocaleString()}`}
+              </span>
+            </p>
+          </div>
+        )}
 
-        <h2>
-          <span className="sub-heading">Recent Transactions</span>
-          <Link to="/all-transactions">
-            <button className="show-all-button">Show All {'>>'}</button>
-          </Link>
-        </h2>
-        <ul>
-          {recentTransactions.map((transaction) => (
-            <PillBar
-              key={transaction.id} // Make sure to add a unique key prop
-              ticker={transaction.ticker}
-              operation={transaction.operation}
-              shares={transaction.shares}
-              date={transaction.date}
-              pricePerShare={transaction.price}
-              costBasis={transaction.price * transaction.shares}
-              fullTimestamp={transaction.date}
-            />
-          ))}
-        </ul>
+        {!isPortfolioEmpty && (
+          <>
+            <h2>
+              <span className="sub-heading">Recent Transactions</span>
+              <Link to="/all-transactions">
+                <button className="show-all-button">Show All {'>>'}</button>
+              </Link>
+            </h2>
+            <ul>
+              {recentTransactions.map((transaction) => (
+                <PillBar
+                  key={transaction.id} // Make sure to add a unique key prop
+                  ticker={transaction.ticker}
+                  operation={transaction.operation}
+                  shares={transaction.shares}
+                  date={transaction.date}
+                  pricePerShare={transaction.price}
+                  costBasis={transaction.price * transaction.shares}
+                  fullTimestamp={transaction.date}
+                />
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </div>
   );
