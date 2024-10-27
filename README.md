@@ -57,7 +57,7 @@ This documentation provides an interactive interface to explore the API endpoint
 
 ## Testing
 
-The application includes tests with **95%** coverage, ensuring robust functionality and reliability.
+The application includes tests with **92%** coverage, ensuring robust functionality and reliability.
 
 The tests can be found within the `tests` directory of the backend folder and can be run using the following command run from the backend folder:
 
