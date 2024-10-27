@@ -33,11 +33,11 @@ def test_search_instrument(client):
     data = json.loads(response.data)  # Load the JSON response
 
     # Check that the response is a list and contains at least one item
-    assert isinstance(data, list)
+    assert isinstance(data, dict)
     assert len(data) > 0
 
     # Check that 'current_price' is in the first item of the list
-    assert 'current_price' in data[0]
+    assert 'current_price' in data
 
 def test_search_instrument_invalid_ticker(client):
     response = client.get('/api/instruments/search?ticker=INVALID')
@@ -165,9 +165,8 @@ def test_get_portfolio_status_no_portfolio(client):
 
     response = client.get('/api/portfolio/status')
     assert response.status_code == 200
+
     status_data = json.loads(response.data)
-    assert status_data['total_shares_owned'] == 0
-    assert status_data['total_cost_basis'] == 0.0
-    assert status_data['total_current_market_value'] == 0.0
-    assert status_data['total_unrealized_profit_loss'] == 0.0
-    assert status_data['total_unrealized_return_rate'] == 0.0
+    assert isinstance(status_data, list)  # Ensure it's a list
+    assert len(status_data) == 0  # Expect an empty list
+

@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# RocketFin Stock Trading Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a security trading application built for the RocketFin full stack candidate programming excercise. This app features a backend built with Python Flask and a frontend built with React. This document outlines how to start the application using Docker, access the Swagger documentation, and more.
 
-## Available Scripts
+## Table of Contents
+- [Setting Up](#setting-up)
+- [Getting Started](#getting-started)
+- [Application Structure](#application-structure)
+- [Swagger Documentation](#swagger-documentation)
+- [Testing](#testing)
+- [Additional Information](#additional-information)
 
-In the project directory, you can run:
+## Setting Up
 
-### `npm start`
+As suggested in the task brief the YH Finance API is used to fetch the stock data. The API key needs to be stored in a `.env` file within the root of the backend directory (create a new file in `backend/.env`). The `.env` file should look like this for the application to work:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+YAHOO_FINANCE_API_KEY=<YOUR_API_KEY>
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The backend should automatically be routed to port 5000 and the frontend to 3000. If the backend is started on a different port or not on localhost the path to it needs to be adjusted within the frontend code. The path can be adjusted in the `frontend/src/config.js` file.
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This application is containerized with Docker. Seperate Dockerfiles are provided for the frontend and backend services, as well as a global docker-compose file to start both services simultaneously.
 
-### `npm run build`
+Assuming that the system is already equipped with Docker desktop, the application can be started by running the following command from the root directory of the project:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+docker-compose up --build
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This command will start both the frontend and backend services together and the application will be accessible at: http://localhost:3000/.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+In the case that Docker is not installed, the services can be started seperately by runnning the following commands from the directories of the respective services:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+# Start the backend service
+python -m app.app
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Start the frontend service
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Application Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The application is split into two main sections:
+- **Frontend**: Built with React, serves the user interface.
+- **Backend**: Built with Flask, handles API requests and business logic.
 
-## Learn More
+## Swagger Documentation
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+After starting the backend service, you can access the Swagger documentation at: http://localhost:5000/apidocs/.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This documentation provides an interactive interface to explore the API endpoints and their usage.
 
-### Code Splitting
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The application includes tests with **95%** coverage, ensuring robust functionality and reliability.
 
-### Analyzing the Bundle Size
+The tests can be found within the `tests` directory of the backend folder and can be run using the following command run from the backend folder:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+pytest --cov=app tests/
+```
 
-### Making a Progressive Web App
+## Additional Information
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For more detailed information, please refer to the [documentation](RocketFin-FullStack-Candidate-Documentation.docx) included withinthe repo. It covers the application structure, usage, and test results in more detail.

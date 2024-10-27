@@ -10,7 +10,7 @@ api = Blueprint('api', __name__)
 @api.route('/instruments/search', methods=['GET'])
 def search_instrument():
     """
-    Search for an instrument by its ticker symbol.
+    Search for an instrument by its ticker symbol and include the amount owned in the portfolio.
     ---
     parameters:
       - name: ticker
@@ -20,7 +20,7 @@ def search_instrument():
         description: The ticker symbol of the instrument to search for.
     responses:
       200:
-        description: Successful search returning instrument data, including name, current price, bid, ask, change value, and change percentage.
+        description: Successful search returning instrument data, including name, current price, bid, ask, change value, change percentage, and shares owned in the portfolio.
         schema:
           type: object
           properties:
@@ -50,6 +50,10 @@ def search_instrument():
               type: number
               format: float
               description: The percentage change in price from the previous trading session.
+            shares_owned:
+              type: number
+              format: int
+              description: The number of shares owned in the portfolio.
       400:
         description: Invalid ticker symbol.
         schema:
@@ -60,12 +64,33 @@ def search_instrument():
               description: Error message indicating the issue.
     """
     ticker = request.args.get('ticker')
+    
+    # Fetch portfolio details
+    portfolio = Portfolio.query.all()
+
+    # Initialize shares owned
+    shares_owned = 0
+    for p in portfolio:
+        if p.ticker.upper() == ticker.upper():
+            shares_owned = p.shares_owned
+            break
+
     try:
-        data = fetch_instrument_data(ticker)
+        # Fetch instrument data, expecting it to return a list
+        instrument_data_list = fetch_instrument_data(ticker)
     except Exception as e:
         return jsonify({"error": str(e)})
+
+    # Look for the specific instrument data in the list
+    instrument_data = next((item for item in instrument_data_list if item['symbol'].upper() == ticker.upper()), None)
+
+    if instrument_data is None:
+        return jsonify({"error": "Instrument not found."}), 404
+
+    # Include shares owned in the response
+    instrument_data['shares_owned'] = shares_owned
     
-    return jsonify(data)
+    return jsonify(instrument_data)
 
 
 @api.route('/transactions/buy', methods=['POST'])
@@ -110,7 +135,7 @@ def buy_shares():
     shares = float(data.get('shares'))
 
     if (shares <= 0):
-        return jsonify({"error": "Invalid number of shares"}), 400
+        return jsonify({"error": "Invalid number of shares."}), 400
 
     # Fetch current price of the instrument
     try:
@@ -184,7 +209,7 @@ def sell_shares():
     shares = float(data.get('shares'))  # Convert shares to float
 
     if (shares <= 0):
-        return jsonify({"error": "Invalid number of shares"}), 400
+        return jsonify({"error": "Invalid number of shares."}), 400
 
     # Fetch current price of the instrument
     try:
@@ -199,7 +224,7 @@ def sell_shares():
         Portfolio.ticker) == ticker.lower()).first()
 
     if not portfolio or portfolio.shares_owned < shares:
-        return jsonify({"error": "Not enough shares to sell"}), 400
+        return jsonify({"error": "Not enough shares to sell."}), 400
 
     # Record the transaction
     transaction = Transaction(
@@ -334,7 +359,7 @@ def get_portfolio():
         instrument_data_list = fetch_instrument_data(','.join(tickers))
     except Exception as e:
         # instrument_data_list = []  # Handle error gracefully
-        raise Exception("Error fetching instrument data")
+        raise Exception("Error fetching instrument data.")
 
     # Create a dictionary for easy lookup of instrument data by ticker
     instrument_data_dict = {

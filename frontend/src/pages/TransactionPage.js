@@ -20,14 +20,18 @@ function TransactionPage({ showError }) {
   const handleSearch = async () => {
     try {
       const data = await searchInstrument(ticker);
-      if (data && data.length > 0) {
-        setInstrumentData(data[0]); // Set to the first item in the array
+      if (data && !data.error) {
+        setInstrumentData(data); // Set to the first item in the array
       } else {
         showError(data.error);
         setInstrumentData(null);
       }
     } catch (error) {
-      showError("Error fetching instrument data.");
+      if (error.message) {
+        showError(error.message);
+      } else {
+        showError("Error fetching instrument data.");
+      }
       setInstrumentData(null);
     }
   };
@@ -40,7 +44,11 @@ function TransactionPage({ showError }) {
       alert("Shares purchased!");
       navigate("/"); // Redirect to the homepage
     } catch (error) {
-      showError("Error purchasing shares.");
+      var message = "Error purchasing shares.";
+      if (error.message) {
+        message = error.message;
+      }
+      showError(message);
     }
   };
 
@@ -50,7 +58,11 @@ function TransactionPage({ showError }) {
       alert("Shares sold!");
       navigate("/"); // Redirect to the homepage
     } catch (error) {
-      showError(error.message);
+      var message = "Error purchasing shares.";
+      if (error.message) {
+        message = error.message;
+      }
+      showError(message);
     }
   };
 
@@ -75,6 +87,10 @@ function TransactionPage({ showError }) {
             <h2>
               {instrumentData.name} ({instrumentData.symbol})
             </h2>
+            <p>
+              Shares Owned:{" "}
+              <span className="price">{instrumentData.shares_owned}</span>
+            </p>
             <p>
               Current Price:{" "}
               <span className="price">${instrumentData.current_price}</span>
