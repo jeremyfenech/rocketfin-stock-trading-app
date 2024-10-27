@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask import Blueprint, request, jsonify
-from models import db, Transaction, Portfolio
-from services import fetch_instrument_data
+from .models import db, Transaction, Portfolio
+from .services import fetch_instrument_data
 from sqlalchemy import func
 
 api = Blueprint('api', __name__)
